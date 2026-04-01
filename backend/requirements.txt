@@ -1,0 +1,24 @@
+# --- Phase 1: Core ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic-settings==2.7.1
+python-dotenv==1.0.1
+
+# --- Phase 1: Database ---
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.1
+
+# --- Phase 2: Auth (uncomment when we get there) ---
+# passlib[bcrypt]==1.7.4
+# python-jose[cryptography]==3.3.0
+
+# --- Phase 3: PDF Pipeline (uncomment when we get there) ---
+# celery[redis]==5.4.0
+# PyMuPDF==1.25.3
+# langchain-text-splitters==0.3.4
+# openai==1.59.7
+# qdrant-client==1.12.1
+
+# --- Phase 4: Query (uncomment when we get there) ---
+# cohere==5.13.3
