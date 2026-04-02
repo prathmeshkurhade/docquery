@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://ragapp:ragapp123@localhost:5432/ragapp"
+    DATABASE_URL: str = "postgresql+asyncpg://ragapp:ragapp123@localhost:5433/ragapp"
 
     # Vector DB
     QDRANT_URL: str = "http://localhost:6333"
@@ -17,10 +17,10 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    # OpenAI
-    OPENAI_API_KEY: str = ""
+    # Gemini (embeddings + LLM)
+    GEMINI_API_KEY: str = ""
 
-    # Cohere
+    # Cohere (re-ranking, optional)
     COHERE_API_KEY: str = ""
 
     # Auth

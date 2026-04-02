@@ -5,7 +5,7 @@ services:
     container_name: ragapp-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5432"   # 5433 on host → 5432 inside container (avoids conflict with local PG)
     environment:
       POSTGRES_USER: ragapp
       POSTGRES_PASSWORD: ragapp123

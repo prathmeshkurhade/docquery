@@ -9,9 +9,9 @@ A Retrieval-Augmented Generation (RAG) application where users upload PDFs, ask 
 - **Task Queue:** Celery + Redis (async PDF processing)
 - **Metadata DB:** PostgreSQL (local Docker — user data, documents, auth)
 - **Vector DB:** Qdrant (local Docker — embeddings + semantic search)
-- **Embeddings:** OpenAI `text-embedding-3-small` (1536 dimensions)
+- **Embeddings:** Google Gemini `text-embedding-004` (768 dimensions, free tier)
 - **Re-Ranker:** Cohere Rerank API (cross-encoder for relevance scoring)
-- **LLM:** OpenAI GPT-4o (answer generation with citations)
+- **LLM:** Google Gemini (answer generation with citations, free tier)
 - **Auth:** JWT-based (self-built)
 - **File Storage:** Local filesystem (dev)
 

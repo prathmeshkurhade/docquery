@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.routers import auth, documents, query
 
 app = FastAPI(
     title="RAG App API",
@@ -17,6 +18,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Register routers
+app.include_router(auth.router)
+app.include_router(documents.router)
+app.include_router(query.router)
 
 
 @app.get("/health")
