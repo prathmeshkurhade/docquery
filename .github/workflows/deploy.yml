@@ -51,11 +51,14 @@ jobs:
           script: |
             cd /home/ubuntu/ragapp
 
-            # Pull latest images
-            docker compose -f docker-compose.prod.yml pull
+            # Pull latest code
+            git pull origin main
 
-            # Restart with new images (zero-downtime-ish)
-            docker compose -f docker-compose.prod.yml up -d
+            # Pull latest images
+            docker compose --env-file .env.prod -f docker-compose.prod.yml pull
+
+            # Restart with new images
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 
             # Run database migrations
             docker exec ragapp-fastapi python -m alembic upgrade head
