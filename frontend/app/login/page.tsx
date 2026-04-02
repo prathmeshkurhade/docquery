@@ -23,8 +23,9 @@ export default function LoginPage() {
       const res = await login(email, password);
       setToken(res.data.access_token);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Login failed");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } };
+      setError(e.response?.data?.detail || "Login failed");
     } finally {
       setLoading(false);
     }

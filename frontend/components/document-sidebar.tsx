@@ -59,8 +59,9 @@ export default function DocumentSidebar({ selectedDocId, onSelectDoc }: Props) {
     try {
       await uploadDocument(file);
       await fetchDocs();
-    } catch (err: any) {
-      alert(err.response?.data?.detail || "Upload failed");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } };
+      alert(e.response?.data?.detail || "Upload failed");
     } finally {
       setUploading(false);
     }

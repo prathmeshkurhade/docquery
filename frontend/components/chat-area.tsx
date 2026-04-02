@@ -44,11 +44,12 @@ export default function ChatArea({ selectedDocId }: Props) {
         timing: res.data.timing,
       };
       setMessages((prev) => [...prev, assistantMsg]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } };
       const errorMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: err.response?.data?.detail || "Something went wrong. Please try again.",
+        content: e.response?.data?.detail || "Something went wrong. Please try again.",
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {

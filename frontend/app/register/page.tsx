@@ -36,8 +36,9 @@ export default function RegisterPage() {
       const res = await login(email, password);
       setToken(res.data.access_token);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Registration failed");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } };
+      setError(e.response?.data?.detail || "Registration failed");
     } finally {
       setLoading(false);
     }
