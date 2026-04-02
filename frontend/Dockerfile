@@ -11,7 +11,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # API URL is baked into the build — set at build time
-ENV NEXT_PUBLIC_API_URL=http://localhost/api
+ARG NEXT_PUBLIC_API_URL=http://65.0.185.51/api
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
 
