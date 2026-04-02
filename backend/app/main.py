@@ -10,10 +10,14 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Allow Next.js frontend (localhost:3000) to call this API
+# Allow frontend to call this API (local + production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://65.0.185.51",
+        "http://docuchatop.duckdns.org",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
