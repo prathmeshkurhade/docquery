@@ -60,6 +60,10 @@ jobs:
             # Restart with new images
             docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 
+            # Wait for containers to be ready, then restart nginx to resolve new IPs
+            sleep 5
+            docker restart ragapp-nginx
+
             # Run database migrations
             docker exec ragapp-fastapi python -m alembic upgrade head
 
