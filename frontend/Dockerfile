@@ -11,7 +11,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # API URL is baked into the build — set at build time
-ARG NEXT_PUBLIC_API_URL=http://65.0.185.51/api
+ARG NEXT_PUBLIC_API_URL=http://docuchatop.duckdns.org/api
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
