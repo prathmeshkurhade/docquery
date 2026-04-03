@@ -1,51 +1,47 @@
 import logging
 import time
 
-from google import genai
+import requests
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Gemini client
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+# HuggingFace Space URL — your self-hosted embedding model
+EMBEDDING_URL = settings.EMBEDDING_URL
+EMBEDDING_DIMENSIONS = 1024  # bge-large-en-v1.5 outputs 1024 dimensions
 
-EMBEDDING_MODEL = "gemini-embedding-001"
-EMBEDDING_DIMENSIONS = 3072
-
-# Rate limit: 100 requests/minute on free tier
-# We add delays between batches and retry on 429
-BATCH_SIZE = 50  # smaller batches = less likely to hit limit
-DELAY_BETWEEN_BATCHES = 2  # seconds between batches
+BATCH_SIZE = 50
 MAX_RETRIES = 5
 
 
-def _embed_batch_with_retry(batch: list[str]) -> list:
-    """Embed a single batch with automatic retry on rate limit."""
+def _embed_batch_with_retry(texts: list[str]) -> list[list[float]]:
+    """Call the HuggingFace Space embedding API with retry."""
     for attempt in range(MAX_RETRIES):
         try:
-            response = client.models.embed_content(
-                model=EMBEDDING_MODEL,
-                contents=batch,
+            response = requests.post(
+                f"{EMBEDDING_URL}/embed",
+                json={"texts": texts},
+                timeout=120,  # model can be slow on first call (cold start)
             )
-            return response.embeddings
+            response.raise_for_status()
+            return response.json()["embeddings"]
         except Exception as e:
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-                wait_time = (attempt + 1) * 15  # 15s, 30s, 45s, 60s, 75s
-                logger.warning(f"Rate limited, waiting {wait_time}s (attempt {attempt + 1}/{MAX_RETRIES})")
+            if attempt < MAX_RETRIES - 1:
+                wait_time = (attempt + 1) * 10
+                logger.warning(f"Embedding request failed, retrying in {wait_time}s (attempt {attempt + 1}/{MAX_RETRIES}): {e}")
                 time.sleep(wait_time)
             else:
-                raise
-    raise Exception("Max retries exceeded for embedding batch")
+                raise Exception(f"Embedding service failed after {MAX_RETRIES} attempts: {e}")
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
     """
-    Convert a list of text strings into embedding vectors using Gemini.
-    Handles rate limiting with automatic retry and delays between batches.
+    Convert a list of text strings into embedding vectors.
+    Calls your self-hosted bge-large-en-v1.5 model on HuggingFace Spaces.
+    No rate limits — it's your own server.
     """
     all_embeddings = []
-
     total_batches = (len(texts) + BATCH_SIZE - 1) // BATCH_SIZE
 
     for i in range(0, len(texts), BATCH_SIZE):
@@ -56,14 +52,10 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
         embeddings = _embed_batch_with_retry(batch)
         all_embeddings.extend(embeddings)
 
-        # Delay between batches to avoid hitting rate limit
-        if i + BATCH_SIZE < len(texts):
-            time.sleep(DELAY_BETWEEN_BATCHES)
-
-    return [emb.values for emb in all_embeddings]
+    return all_embeddings
 
 
 def embed_query(query: str) -> list[float]:
     """Embed a single query string. Used during search."""
     embeddings = _embed_batch_with_retry([query])
-    return embeddings[0].values
+    return embeddings[0]

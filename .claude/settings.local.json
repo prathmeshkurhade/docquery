@@ -6,6 +6,9 @@
       "Bash(npx create-next-app@14 frontend --typescript --tailwind --app --eslint --no-src-dir --import-alias \"@/*\")",
       "Bash(npm install:*)",
       "Bash(npm run:*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\ADMIN\\OneDrive\\Desktop\\ragapp"
     ]
   }
 }

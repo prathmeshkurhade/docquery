@@ -22,6 +22,7 @@ langchain-text-splitters==0.3.4
 google-genai==1.14.0
 qdrant-client==1.12.1
 psycopg2-binary==2.9.10
+requests==2.32.3
 
 # --- Phase 4: Query ---
 cohere==5.13.3

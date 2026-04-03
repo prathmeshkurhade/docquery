@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    # Gemini (embeddings + LLM)
+    # Embedding service (HuggingFace Space)
+    EMBEDDING_URL: str = "https://prathmeshkurhade-embedding-api.hf.space"
+
+    # Gemini (LLM only now)
     GEMINI_API_KEY: str = ""
 
     # Cohere (re-ranking, optional)
