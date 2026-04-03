@@ -33,9 +33,9 @@ async def query_documents(
     t0 = time.time()
     query_vector = embed_query(request.question)
 
-    # Step 2: Vector search
+    # Step 2: Vector search (always scoped to current user)
     doc_filter = str(request.document_id) if request.document_id else None
-    raw_results = search_chunks(query_vector, document_id=doc_filter, top_k=20)
+    raw_results = search_chunks(query_vector, user_id=str(user.id), document_id=doc_filter, top_k=20)
     search_ms = round((time.time() - t0) * 1000)
 
     if not raw_results:

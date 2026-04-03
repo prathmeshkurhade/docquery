@@ -43,6 +43,14 @@ def process_pdf(document_id: str, file_path: str):
     logger.info(f"Processing PDF: {document_id}")
 
     try:
+        # Get user_id from document (needed for Qdrant user scoping)
+        with SyncSession() as session:
+            result = session.execute(
+                select(Document).where(Document.id == document_id)
+            )
+            doc = result.scalar_one()
+            user_id = str(doc.user_id)
+
         # Mark as processing
         update_status(document_id, DocumentStatus.PROCESSING)
 
@@ -72,7 +80,7 @@ def process_pdf(document_id: str, file_path: str):
 
         # Step 4: Store in Qdrant
         logger.info("Step 4: Storing in Qdrant...")
-        store_chunks(document_id, chunks, embeddings)
+        store_chunks(document_id, user_id, chunks, embeddings)
 
         # Done — update status
         update_status(

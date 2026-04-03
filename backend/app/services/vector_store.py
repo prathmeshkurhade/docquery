@@ -50,6 +50,7 @@ def ensure_collection():
 
 def store_chunks(
     document_id: str,
+    user_id: str,
     chunks: list[dict],
     embeddings: list[list[float]],
 ):
@@ -58,11 +59,10 @@ def store_chunks(
 
     Each "point" in Qdrant has:
     - id: unique UUID
-    - vector: the 1536-dim embedding
-    - payload: metadata (document_id, text, page_number, chunk_index)
+    - vector: the embedding
+    - payload: metadata (document_id, user_id, text, page_number, chunk_index)
 
-    Payload is searchable — we can filter by document_id later
-    to only search within a specific document.
+    user_id ensures searches are scoped to the user's own documents.
     """
     ensure_collection()
 
@@ -73,6 +73,7 @@ def store_chunks(
             vector=embedding,
             payload={
                 "document_id": document_id,
+                "user_id": user_id,
                 "text": chunk["text"],
                 "page_number": chunk["page_number"],
                 "chunk_index": chunk["chunk_index"],
@@ -95,33 +96,34 @@ def store_chunks(
 
 def search_chunks(
     query_embedding: list[float],
+    user_id: str,
     document_id: str | None = None,
     top_k: int = 20,
 ) -> list[dict]:
     """
     Search for similar chunks using a query embedding.
-
-    Returns top_k most similar chunks, optionally filtered to a specific document.
-
-    Each result contains:
-    - text: the chunk text
-    - page_number: which page it came from
-    - score: cosine similarity (0.0 to 1.0)
-    - document_id: which document it belongs to
+    Always filtered by user_id — users can only search their own documents.
     """
     ensure_collection()
 
-    # Optional filter: only search within a specific document
-    search_filter = None
-    if document_id:
-        search_filter = Filter(
-            must=[
-                FieldCondition(
-                    key="document_id",
-                    match=MatchValue(value=document_id),
-                )
-            ]
+    # Always filter by user_id
+    must_conditions = [
+        FieldCondition(
+            key="user_id",
+            match=MatchValue(value=user_id),
         )
+    ]
+
+    # Optionally also filter by specific document
+    if document_id:
+        must_conditions.append(
+            FieldCondition(
+                key="document_id",
+                match=MatchValue(value=document_id),
+            )
+        )
+
+    search_filter = Filter(must=must_conditions)
 
     results = client.query_points(
         collection_name=COLLECTION_NAME,
