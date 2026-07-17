@@ -11,8 +11,9 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://ragapp:ragapp123@localhost:5433/ragapp"
 
-    # Vector DB
+    # Vector DB (Qdrant Cloud)
     QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_API_KEY: str = ""
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -25,6 +26,9 @@ class Settings(BaseSettings):
 
     # Cohere (re-ranking, optional)
     COHERE_API_KEY: str = ""
+
+    # CORS - comma-separated list of allowed frontend origins
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     # Auth
     JWT_SECRET: str = "change-this-to-a-random-string"

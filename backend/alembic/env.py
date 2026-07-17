@@ -16,7 +16,9 @@ from app.models.document import Document  # noqa: F401
 config = context.config
 
 # Set the DB URL from our settings (not from alembic.ini)
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# configparser treats "%" as interpolation syntax, so "%" in the URL
+# (e.g. from a percent-encoded password) must be escaped as "%%" here
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 # Set up Python logging from alembic.ini
 if config.config_file_name is not None:

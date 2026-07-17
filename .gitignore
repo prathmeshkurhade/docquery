@@ -30,6 +30,3 @@ node_modules/
 .next/
 frontend/.env.local
 
-# --- Docker volumes ---
-postgres_data/
-qdrant_data/

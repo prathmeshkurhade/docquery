@@ -1,3 +1,5 @@
+import ssl
+
 from celery import Celery
 
 from app.config import settings
@@ -26,4 +28,9 @@ celery_app.conf.update(
     # Auto-discover tasks in these modules
     # Celery will look for functions decorated with @celery_app.task
     imports=["app.workers.pdf_pipeline"],
+
+    # Upstash Redis requires TLS (rediss://) — Celery needs this set explicitly
+    # or it raises "ValueError: A rediss:// URL must have parameter ssl_cert_reqs"
+    broker_use_ssl={"ssl_cert_reqs": ssl.CERT_NONE},
+    redis_backend_use_ssl={"ssl_cert_reqs": ssl.CERT_NONE},
 )

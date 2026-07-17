@@ -13,11 +13,7 @@ app = FastAPI(
 # Allow frontend to call this API (local + production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://65.0.185.51",
-        "http://docuchatop.duckdns.org",
-    ],
+    allow_origins=[origin.strip() for origin in settings.CORS_ORIGINS.split(",")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -7,6 +7,7 @@ from qdrant_client.models import (
     FieldCondition,
     Filter,
     MatchValue,
+    PayloadSchemaType,
     PointStruct,
     VectorParams,
 )
@@ -16,8 +17,8 @@ from app.services.embedding import EMBEDDING_DIMENSIONS
 
 logger = logging.getLogger(__name__)
 
-# Qdrant client — connects to localhost:6333
-client = QdrantClient(url=settings.QDRANT_URL)
+# Qdrant client — connects to Qdrant Cloud
+client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 # Collection name — like a "table" in Qdrant
 COLLECTION_NAME = "document_chunks"
@@ -46,6 +47,19 @@ def ensure_collection():
             ),
         )
         logger.info(f"Created Qdrant collection: {COLLECTION_NAME}")
+
+        # Qdrant requires a payload index on any field used in a search filter
+        client.create_payload_index(
+            collection_name=COLLECTION_NAME,
+            field_name="user_id",
+            field_schema=PayloadSchemaType.KEYWORD,
+        )
+        client.create_payload_index(
+            collection_name=COLLECTION_NAME,
+            field_name="document_id",
+            field_schema=PayloadSchemaType.KEYWORD,
+        )
+        logger.info("Created payload indexes: user_id, document_id")
 
 
 def store_chunks(
